@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flexible Grid Search</title>
+    <link rel="stylesheet" href="css/flexible-grid.min.css" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        background: #f5f7fa;
+        color: #263238;
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 3rem 1.5rem 4rem;
+        gap: 2rem;
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+
+      header {
+        gap: 1rem;
+        text-align: center;
+      }
+
+      header h1 {
+        font-weight: 600;
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 2.6rem);
+      }
+
+      header p {
+        margin: 0 auto;
+        max-width: 480px;
+        line-height: 1.6;
+        color: #455a64;
+      }
+
+      .search-box {
+        position: relative;
+        max-width: 520px;
+        margin: 0 auto;
+      }
+
+      .search-box input[type="search"] {
+        width: 100%;
+        border: none;
+        border-radius: 999px;
+        padding: 0.9rem 1.2rem;
+        font-size: 1rem;
+        box-shadow: 0 12px 30px rgba(38, 50, 56, 0.12);
+        transition: box-shadow 0.2s ease;
+      }
+
+      .search-box input[type="search"]:focus {
+        outline: 3px solid rgba(100, 181, 246, 0.4);
+        box-shadow: 0 18px 42px rgba(38, 50, 56, 0.18);
+      }
+
+      .search-stats {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        color: #607d8b;
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+      }
+
+      .result-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 1.5rem;
+        box-shadow: 0 18px 32px rgba(38, 50, 56, 0.12);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        gap: 0.75rem;
+      }
+
+      .result-card:hover,
+      .result-card:focus-within {
+        transform: translateY(-6px);
+        box-shadow: 0 22px 40px rgba(38, 50, 56, 0.16);
+      }
+
+      .result-card h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        color: #1a237e;
+      }
+
+      .result-card p {
+        margin: 0;
+        line-height: 1.6;
+        color: #546e7a;
+      }
+
+      .result-card .summary {
+        gap: 0.5rem;
+      }
+
+      .tag-list {
+        gap: 0.5rem;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        background: #e3f2fd;
+        color: #0d47a1;
+        font-weight: 600;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .result-card .cta {
+        align-self: flex-start;
+        background: linear-gradient(135deg, #1a237e, #3949ab);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 0.55rem 1.15rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 12px 22px rgba(26, 35, 126, 0.22);
+      }
+
+      .result-card .cta:hover,
+      .result-card .cta:focus-visible {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 32px rgba(26, 35, 126, 0.3);
+      }
+
+      .result-card .cta:focus-visible {
+        outline: 3px solid rgba(100, 181, 246, 0.55);
+        outline-offset: 3px;
+      }
+
+      .no-results {
+        text-align: center;
+        color: #90a4ae;
+        font-size: 1.1rem;
+        padding: 2rem 0 1rem;
+      }
+
+      @media (min-width: 720px) {
+        .results {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (min-width: 1020px) {
+        .results {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page d-flex flex-d-column">
+      <header class="d-flex flex-d-column align-items-center">
+        <h1>Flexible Grid Search</h1>
+        <p>
+          Explore starter layouts, demos, and utilities powered by the Flexible Grid
+          system. Use the search to filter resources instantly.
+        </p>
+        <label class="search-box d-flex flex-d-column" for="search-input">
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search layouts, utilities, or tutorials..."
+            autocomplete="off"
+          />
+          <span class="search-stats" role="status" aria-live="polite"></span>
+        </label>
+      </header>
+      <section class="results" data-results role="list"></section>
+      <p class="no-results" hidden>No matches yet—try a different keyword.</p>
+    </main>
+
+    <template id="result-card">
+      <article class="result-card d-flex flex-d-column" role="listitem">
+        <div class="summary d-flex flex-d-column">
+          <h2></h2>
+          <p></p>
+        </div>
+        <div class="tag-list d-flex flex-wrap" data-tags></div>
+        <a class="cta" target="_blank" rel="noopener noreferrer"></a>
+      </article>
+    </template>
+
+    <script>
+      const resources = [
+        {
+          title: "Dashboard Starter Layout",
+          description:
+            "Responsive admin dashboard scaffolding built with nested flexible rows and columns.",
+          url: "https://flexible-grid.com/examples/dashboard",
+          tags: ["layout", "dashboard", "responsive"],
+        },
+        {
+          title: "Pricing Grid",
+          description:
+            "Three-tier pricing layout demonstrating equal-height cards and responsive wrapping.",
+          url: "https://flexible-grid.com/examples/pricing",
+          tags: ["layout", "pricing", "cards"],
+        },
+        {
+          title: "Marketing Hero",
+          description:
+            "Landing hero component highlighting content alignment utilities and flexible spacing.",
+          url: "https://flexible-grid.com/examples/hero",
+          tags: ["landing", "hero", "alignment"],
+        },
+        {
+          title: "Utility Reference",
+          description:
+            "Complete list of spacing and alignment utilities available in the Flexible Grid toolkit.",
+          url: "https://flexible-grid.com/documentation/utilities",
+          tags: ["documentation", "utilities"],
+        },
+        {
+          title: "Flexbox Crash Course",
+          description:
+            "Hands-on tutorial that introduces the Flexible Grid classes with interactive demos.",
+          url: "https://flexible-grid.com/learn/flexbox-course",
+          tags: ["tutorial", "course", "beginner"],
+        },
+        {
+          title: "E-commerce Product Gallery",
+          description:
+            "Masonry-inspired product grid showcasing responsive wrapping and gap management.",
+          url: "https://flexible-grid.com/examples/ecommerce",
+          tags: ["ecommerce", "gallery", "layout"],
+        },
+        {
+          title: "Community Templates",
+          description:
+            "Curated gallery of community-submitted templates ready to remix for your next project.",
+          url: "https://flexible-grid.com/community/templates",
+          tags: ["templates", "community", "showcase"],
+        },
+        {
+          title: "Command Palette",
+          description:
+            "Searchable palette UI demonstrating keyboard navigation and quick actions.",
+          url: "https://flexible-grid.com/examples/command-palette",
+          tags: ["search", "keyboard", "ui"],
+        },
+      ];
+
+      const searchInput = document.querySelector("#search-input");
+      const resultsContainer = document.querySelector("[data-results]");
+      const template = document.querySelector("#result-card");
+      const stats = document.querySelector(".search-stats");
+      const emptyState = document.querySelector(".no-results");
+
+      const normalize = (value) =>
+        value
+          .toString()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+      const render = (items) => {
+        resultsContainer.innerHTML = "";
+
+        const fragment = document.createDocumentFragment();
+
+        items.forEach((item) => {
+          const node = template.content.cloneNode(true);
+          const title = node.querySelector("h2");
+          const description = node.querySelector("p");
+          const tags = node.querySelector("[data-tags]");
+          const cta = node.querySelector(".cta");
+
+          title.textContent = item.title;
+          description.textContent = item.description;
+          cta.href = item.url;
+          cta.textContent = "Open resource";
+
+          item.tags.forEach((tag) => {
+            const span = document.createElement("span");
+            span.className = "tag";
+            span.textContent = tag;
+            tags.appendChild(span);
+          });
+
+          fragment.appendChild(node);
+        });
+
+        resultsContainer.appendChild(fragment);
+      };
+
+      const update = () => {
+        const query = normalize(searchInput.value.trim());
+        const start = performance.now();
+
+        const filtered = resources.filter((resource) => {
+          if (!query) return true;
+          const haystack = normalize(
+            `${resource.title} ${resource.description} ${resource.tags.join(" ")}`
+          );
+          return haystack.includes(query);
+        });
+
+        render(filtered);
+
+        const elapsed = Math.round((performance.now() - start) * 100) / 100;
+        const label =
+          filtered.length === resources.length && !query
+            ? "Showing all resources"
+            : `Showing ${filtered.length} of ${resources.length} matches in ${elapsed} ms`;
+
+        stats.textContent = label;
+        emptyState.hidden = filtered.length > 0;
+        resultsContainer.toggleAttribute("hidden", filtered.length === 0);
+      };
+
+      searchInput.addEventListener("input", update);
+      update();
+    </script>
+  </body>
+</html>
